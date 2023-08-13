@@ -1,135 +1,163 @@
-// Import the necessary modules
 const router = require('express').Router();
-const { User, Post, Comment } = require('../../models'); // Import User, Post, and Comment models
-
-
-// Define the `/api/users` endpoint for handling GET requests
-// Get all users
-router.get('/', async (req, res) => {
-try {
-  const userData = await User.findAll();
-  res.status(200).json(userData);
-} catch (err) {
-  res.status(500).json(err);
-}
+const { User, Post, Comment } = require('../../models');
+router.get('/', (req, res) => {
+    User.findAll({
+            attributes: { exclude: ['[password'] }
+        })
+        .then(dbUserData => res.json(dbUserData))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
 });
 
-// create a new user
-router.post('/', async (req, res) => {
-  try {
-    const dbU$serData = await User.create({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    });
-    req.session.save(() => {
-      req.session.user_id = dbU$.id;
-      req.session.logged_in = true;
-      res.status(200).json(dbU$);
-    });
+router.get('/:id', (req, res) => {
+    User.findOne({
+            attributes: { exclude: ['password'] },
+            where: {
+                id: req.params.id
+            },
+            include: [{
+                    model: Post,
+                    attributes: [
+                        'id',
+                        'title',
+                        'content',
+                        'created_at'
+                    ]
+                },
 
-  } catch (err) {
-    console.log(err);
-    res.status(500).json(err);
-  }
+                {
+                    model: Comment,
+                    attributes: ['id', 'comment_text', 'created_at'],
+                    include: {
+                        model: Post,
+                        attributes: ['title']
+                    }
+                },
+                {
+                    model: Post,
+                    attributes: ['title'],
+                }
+            ]
+        })
+        .then(dbUserData => {
+            if (!dbUserData) {
+                res.status(404).json({ message: 'No user found with this id' });
+                return;
+            }
+            res.json(dbUserData);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
 });
-  try {
-    // Retrieve all users and include their associated posts and comments
-
-    console.log('hello')
-
-    const userData = await User.findAll({
-      include: [
-        { model: Post, include: Comment }, // Include associated posts and comments
-        // Include standalone associated comments
-      ]
-    });
-
-  console.log(userData)
-
-    res.status(200).json(userData);
-  } catch (err) {
-    console.error(err);
-    // Handle any errors that occur during the retrieval
-    res.status(500).json(err);
-  };
 
 
+router.post('/', (req, res) => {
 
-
-
-
-// Define the `/api/users/:user_id` endpoint for handling GET requests
-router.get('/:user_id', async (req, res) => {
-  // Find a user by their `user_id` value and include their associated posts and comments
-  try {
-    const userData = await User.findByPk(req.params.user_id, {
-      include: [
-        { model: Post, include: Comment }, // Include associated posts and comments
-        Comment // Include standalone associated comments
-      ]
+    User.create({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password
     })
-    res.status(200).json(userData);
-  } catch(err) {
-    // Handle any errors that occur during the retrieval
-    res.status(500).json(err);
-  }
+
+    .then(dbUserData => {
+            req.session.save(() => {
+                req.session.user_id = dbUserData.id;
+                req.session.username = dbUserData.username;
+                req.session.loggedIn = true;
+
+                res.json(dbUserData);
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
 });
 
-// Define the `/api/users` endpoint for handling POST requests
-router.post('/', async (req, res) => {
-  // Create a new user with the data provided in the request body
-  try {
-    const userData = await User.create(req.body)
-    res.status(201).json(userData);
-  } catch (err) {
-    // Handle any errors that occur during the creation
-    res.status(500).json(err);
-  }
+router.post('/login', (req, res) => {
+    User.findOne({
+            where: {
+                username: req.body.username
+            }
+        }).then(dbUserData => {
+            if (!dbUserData) {
+                res.status(400).json({ message: 'No user with that username!' });
+                return;
+            }
+            const validPassword = dbUserData.checkPassword(req.body.password);
+
+            if (!validPassword) {
+                res.status(400).json({ message: 'Incorrect password!' });
+                return;
+            }
+            req.session.save(() => {
+
+                req.session.user_id = dbUserData.id;
+                req.session.username = dbUserData.username;
+                req.session.loggedIn = true;
+
+                res.json({ user: dbUserData, message: 'You are now logged in!' });
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
 });
 
-// Define the `/api/users/:user_id` endpoint for handling PUT requests
-router.put('/:user_id', async (req, res) => {
-  // Update a user with the provided `user_id` using the data from the request body
-  try {
-    // Perform the update operation
-    const [rowsUpdated] = await User.update(req.body, {
-      where: {
-        id: req.params.user_id,
-      },
-    });
-
-    // Check if any rows were actually updated
-    if (rowsUpdated === 0) {
-      return res.status(404).json({ error: 'User not found.' });
+router.post('/logout', (req, res) => {
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+            res.status(204).end();
+        });
+    } else {
+        res.status(404).end();
     }
-
-    // Fetch the updated user data from the database
-    const updatedUser = await User.findByPk(req.params.user_id);
-
-    // Respond with the updated user data
-    res.status(200).json(updatedUser);
-  } catch (err) {
-    // Handle any errors that occur during the update
-    res.status(500).json(err);
-  }
 });
 
-// Define the `/api/users/:user_id` endpoint for handling DELETE requests
-router.delete('/:user_id', async (req, res) => {
-  // Delete a user with the provided `user_id`
-  try {
-    await User.destroy({
-      where: {
-        id: req.params.user_id,
-      },
-    });
-    res.status(204).end();
-  } catch (err) {
-    // Handle any errors that occur during the deletion
-    res.status(500).json(err);
-  }
+router.put('/:id', (req, res) => {
+
+    User.update(req.body, {
+            individualHooks: true,
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(dbUserData => {
+            if (!dbUserData) {
+                res.status(404).json({ message: 'No user found with this id' });
+                return;
+            }
+            res.json(dbUserData);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+
 });
 
-// Export the router for use in other modules
+router.delete('/:id', (req, res) => {
+    User.destroy({
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(dbUserData => {
+            if (!dbUserData) {
+                res.status(404).json({ message: 'No user found with this id' });
+                return;
+            }
+            res.json(dbUserData);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+});
+
 module.exports = router;
