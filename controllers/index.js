@@ -1,10 +1,9 @@
 const router = require('express').Router();
-const apiRoutes = require('../config/api');
-const axios = require('axios')
-const rendRouter = require('./rendered');
 
-router.use('/api', apiRoutes)
+const apiRoutes = require('./api');
+const htmlRoutes = require('./html');
 
-router.use('/', rendRouter)
+router.use('/', htmlRoutes);
+router.use('/api', apiRoutes);
 
 module.exports = router;
