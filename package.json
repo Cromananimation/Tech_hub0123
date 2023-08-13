@@ -1,0 +1,32 @@
+{
+  "name": "tech_hub0123",
+  "version": "1.0.0",
+  "description": "A place for techicians to come together and share knowledge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "watch": "nodemon server.js",
+    "seed": "node seeds/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cromananimation/Tech_hub0123.git"
+  },
+  "author": "Cromananimation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cromananimation/Tech_hub0123/issues"
+  },
+  "homepage": "https://github.com/Cromananimation/Tech_hub0123#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "mysql2": "^3.5.2",
+    "nodemon": "^3.0.1",
+    "sequelize": "^6.32.1"
+  }
+}

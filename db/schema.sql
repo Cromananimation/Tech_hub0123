@@ -1,0 +1,9 @@
+DROP DATABASE IF EXISTS techhub0123_db;
+
+CREATE DATABASE techhub0123_db;
+
+USE techhub0123_db;
+
+SHOW DATABASES;
+USE techhub0123_db;
+SHOW TABLES;
