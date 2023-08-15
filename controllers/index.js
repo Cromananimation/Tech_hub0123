@@ -1,12 +1,12 @@
 const router = require('express').Router();
 const apiRoutes = require('./api');
-const homeRoutes = require('./utls/home_routes');
-const dashboardRoutes = require('./utls/consoule');
+const homeRoutes = require('../public/utls/home_routes.js');
+const consouleRoutes = require('./consoule_routes.js');
 const rendRouter = require('./rendered');
-router.use('/', rendRouter);
+
 router.use('/api', apiRoutes);
-router.use('/home', homeRoutes);
-router.use('/dashboard', dashboardRoutes);
+router.use('/', homeRoutes);
+router.use('/consoule', consouleRoutes);
 router.use((req, res) => {
     res.status(404).end();
 });

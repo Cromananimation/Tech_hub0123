@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const { passport } = require('./utls/auth');
+const { passport } = require('../public/utls/auth');
 const { Post, Comment, User } = require('../models');
-const  { withAuth }  = require('./utls/auth');
+const  { withAuth }  = require('../public/utls/auth');
 const bcrypt = require('bcrypt');
 
 router.get('/', withAuth, async (req, res) => {

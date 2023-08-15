@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Tech Word</title>
+  <title>Tech_Hub0123</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
@@ -15,8 +15,8 @@
         <nav class="navbar">
             {{#if loggedIn}}
             <a href="/" class="navbar-item">homepage</a>
-            <a href="/dashboard" class="navbar-item">dashboard</a>
-            <a href="/dashboard/create/" class="navbar-item">create post</a>
+            <a href="/consoule" class="navbar-item">dashboard</a>
+            <a href="/consoule/create/" class="navbar-item">create post</a>
             <button id="logout" class="button logout">logout</button>
             {{else}}
             <a href="/" class="navbar-item pt-1">homepage</a>
@@ -24,26 +24,21 @@
             {{/if}}
         </nav>
     </header>
-
+    <h1>Your Posts:</h1>
     <main class="container">
             <!-- {{{ body }}} -->
             <div class="row mb-1">
-                <a href="/dashboard" class=""> &larr; Dashboard</a>
-                <h1>Add Post</h1>
-                <form class="new-post-form">
-                    <div class="mb-3">
-                       <label for="post-title" class="form-label">Post Title:</label>
-                       <input type="text" name="post-title" id="post-title" class="form-control input"/>
-                     </div>
-                     <div class="mb-3">
-                       <label for="post-content" class="form-label">Content</label>
-                       <input class="textarea form-control" name="post-content" id="post-content" type="text"/>
-                     </div>
-                     <div class="mb-3">
-                       <button type="submit" class="btn is-success">Create Post</button>
-                     </div>
-                   </form>
-            </div>
+              <a href="/consoule/create/"><button id="create-post" class="btn">create post</button></a>
+            <div class="card post d-flex">
+                <div class="card-body post-body">
+                  <h4 class="card-title post-title">Card title <a href="/dashboard/edit/{{post.id}}"><button class="btn">edit post</button></a></h4>
+                  
+                  <p class="card-text post-text">
+                    blah, blah, blah, tech tech, toc, toc
+                  </p>
+                  <a href="#!" class="btn btn-primary post-button">View Post</a>
+                  <p class="post-date">Posted On: 08/14/2023 by <span class="post-username">Ceasar Roman</span></p>
+                </div>
     </main>
 
 <footer class="footer rows footer-margin">
@@ -54,7 +49,7 @@
         </div>
       <div class="row-is-full content has-text-centered">
     <p>
-      Tech_Hub0123 <a href="https://github.com/cromananimation@gmail.com"> Ceasar Roman</a>
+      The Tech Word by <a href="https://github.com/cromananimation@gmail.com"> Leon Hsu</a>
     </p>
   </div>
     </footer>
@@ -62,7 +57,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-<script src="/javascript/add-post.js"></script>
+<script src="js/logout.js"></script>
 </body>
 
 </html>
