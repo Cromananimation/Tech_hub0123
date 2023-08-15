@@ -12,6 +12,14 @@ User.init(
       primaryKey: true,
       autoIncrement: true,
     },
+email: {
+  type: DataTypes.STRING(255),
+  allowNull: false,
+  unique: true,
+  validate: {
+    isEmail: true,
+  },
+},
     username: {
       type: DataTypes.STRING(32),
       allowNull: false,
@@ -23,9 +31,15 @@ User.init(
     profile_pic_url: {
       type: DataTypes.STRING(255),
       defaultValue: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-    }
+    },
   },
   {
+  hooks: {
+    beforeCreate: async (newUserData) => {
+      newUserData.password = await bcrypt.hash(newUserData.password, 10);
+      return newUserData;
+    },
+  },
     sequelize,
     timestamps: false,
     freezeTableName: true,
